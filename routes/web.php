@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('login');
 });
 
 Route::get('/dashboard', function () {
@@ -21,3 +21,5 @@ Route::middleware('auth')->group(function () {
 require __DIR__.'/auth.php';
 
 Route::get('index', [HomeController::class, 'index'])->name('index');
+Route::get('history', [HomeController::class, 'history'])->name('history');
+Route::get('data', [HomeController::class, 'data'])->name('data');

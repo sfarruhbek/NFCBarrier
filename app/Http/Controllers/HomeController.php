@@ -12,4 +12,12 @@ class HomeController extends Controller
     {
         return view('index');
     }
+    public function history(): View|Factory|Application
+    {
+        return view('history');
+    }
+    public function data(): View|Factory|Application
+    {
+        return view('data');
+    }
 }
