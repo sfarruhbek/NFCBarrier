@@ -52,24 +52,9 @@
                     @endforeach
                 </table>
 
-
             </div>
-            <div aria-label="Page navigation example" id="stil">
-                <ul class="pagination">
-                    <li class="page-item">
-                        <a class="page-link" href="#" aria-label="Previous">
-                            <span aria-hidden="true">«</span>
-                        </a>
-                    </li>
-                    <li class="page-item"><a class="page-link" href="#">1</a></li>
-                    <li class="page-item"><a class="page-link" href="#">2</a></li>
-                    <li class="page-item"><a class="page-link" href="#">3</a></li>
-                    <li class="page-item">
-                        <a class="page-link" href="#" aria-label="Next">
-                            <span aria-hidden="true">»</span>
-                        </a>
-                    </li>
-                </ul>
+            <div class="d-flex justify-content-center">
+                {{ $cars->links('pagination::bootstrap-5') }}
             </div>
         </div>
 
@@ -161,12 +146,6 @@
                                 icon: "error"
                             });
                         }
-                    }).catch(error => {
-                        Swal.fire({
-                            title: "Xato",
-                            text: "Server bilan bog'lanishda xatolik yuz berdi!",
-                            icon: "error"
-                        });
                     });
                 }
             });

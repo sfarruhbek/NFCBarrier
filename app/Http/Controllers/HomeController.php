@@ -19,8 +19,10 @@ class HomeController extends Controller
     }
     public function data(): View|Factory|Application
     {
+        $cars = Cars::query()->paginate(10);
+
         return view('data',[
-            'cars'=>Cars::all(),
+            'cars'=>$cars,
         ]);
     }
 }
