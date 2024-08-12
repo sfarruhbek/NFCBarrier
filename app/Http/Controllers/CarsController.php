@@ -70,7 +70,9 @@ class CarsController extends Controller
      */
     public function destroy($id): JsonResponse
     {
-        Cars::destroy($id);
+        $data=Cars::find($id);
+        $data->status=false;
+        $data->save();
         return response()->json(['success' => 'Car deleted successfully!']);
     }
 }

@@ -4,6 +4,7 @@ use App\Http\Controllers\CarsController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\HistoryController;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -25,3 +26,4 @@ Route::get('index', [HomeController::class, 'index'])->name('index');
 Route::get('history', [HomeController::class, 'history'])->name('history');
 Route::get('data', [HomeController::class, 'data'])->name('data');
 Route::resource('cars', CarsController::class)->names('cars');
+Route::resource('data_history', HistoryController::class)->names('data_history');

@@ -72,11 +72,11 @@
                 <form id="carForm" action="{{route('cars.store')}}" method="POST">
                     @csrf
                     <label for="model">Mashina turi</label>
-                    <input type="text" name="model" >
+                    <input type="text" name="model" required>
                      <label for="car_number">Mashina raqami</label>
-                    <input type="text" name="car_number">
+                    <input type="text" name="car_number" required>
                     <label for="car_color">Mashina rangi</label>
-                    <input type="text" name="car_color">
+                    <input type="text" name="car_color" required>
                 </form> `,
                 confirmButtonText:"Saqlash",
                 cancelButtonText: "Bekor qilish",
@@ -98,11 +98,11 @@
                     @method("PUT")
                     @csrf
                     <label for="model">Mashina turi</label>
-                    <input type="text" name="model" value="${model}">
+                    <input type="text" name="model" value="${model}" required>
                      <label for="car_number">Mashina raqami</label>
-                    <input type="text" name="car_number" value="${car_number}">
+                    <input type="text" name="car_number" value="${car_number}" required>
                     <label for="car_color">Mashina rangi</label>
-                    <input type="text" name="car_color" value="${car_color}">
+                    <input type="text" name="car_color" value="${car_color}" required>
                 </form> `,
                 confirmButtonText:"Tahrirlash",
                 cancelButtonText: "Bekor qilish",
@@ -114,7 +114,6 @@
             });
         }
         function deleteData(id){
-            console.log(id);
             Swal.fire({
                 title: "Ishonchingiz komilmi?",
                 text: "Siz buni qayta tiklay olmaysiz",

@@ -27,63 +27,25 @@
                         <th>Kirish vaqti</th>
                         <th></th>
                     </tr>
-                    <tr>
-                        <td>1</td>
-                        <td>Matiz</td>
-                        <td>90 N015GU </td>
-                        <td>
-                            <canvas class="color-screen" style="background: deeppink"></canvas>
-                        </td>
-
-                        <td> 15-iyun; 00:00</td>
-                        <td>
-                            <button class="btn btn-danger" onclick="deleteData(1)"><i class="bi bi-trash"></i></button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>2</td>
-                        <td>Spark</td>
-                        <td>90 N016GU </td>
-                        <td>
-                            <canvas class="color-screen" style="background: black"></canvas>
-                        </td>
-                        <td> 15-iyul; 00:00</td>
-                        <td>
-                            <button class="btn btn-danger" onclick="deleteData(2)"><i class="bi bi-trash"></i></button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>3</td>
-                        <td>Gentra</td>
-                        <td>90 N005GU </td>
-                        <td>
-                            <canvas class="color-screen" style="background: midnightblue"></canvas>
-                        </td>
-                        <td> 15-iyun; 00:00</td>
-                        <td>
-                            <button class="btn btn-danger" onclick="deleteData(3)"><i class="bi bi-trash"></i></button>
-                        </td>
-                    </tr>
+                    @foreach($history as $val)
+                        <tr>
+                            <td>{{$val->id}}</td>
+                            <td>{{$val->car->model}}</td>
+                            <td>{{$val->car->car_number}}</td>
+                            <td>{{$val->car->car_color}}</td>
+                            <td>{{$val->entered_date}}</td>
+                            <td>
+                                <button class="btn btn-danger" onclick="deleteData({{$val->id}})"><i class="bi bi-trash"></i></button>
+                            </td>
+                        </tr>
+                    @endforeach
                 </table>
 
 
             </div>
-            <div aria-label="Page navigation example" id="stil">
-                <ul class="pagination">
-                    <li class="page-item">
-                        <a class="page-link" href="#" aria-label="Previous">
-                            <span aria-hidden="true">«</span>
-                        </a>
-                    </li>
-                    <li class="page-item"><a class="page-link" href="#">1</a></li>
-                    <li class="page-item"><a class="page-link" href="#">2</a></li>
-                    <li class="page-item"><a class="page-link" href="#">3</a></li>
-                    <li class="page-item">
-                        <a class="page-link" href="#" aria-label="Next">
-                            <span aria-hidden="true">»</span>
-                        </a>
-                    </li>
-                </ul>
+
+            <div class="d-flex justify-content-center">
+                {{ $history->links('pagination::bootstrap-5') }}
             </div>
         </div>
 
@@ -94,7 +56,6 @@
     </div>
     <script>
         function deleteData(id) {
-            console.log(id);
             Swal.fire({
                 title: "Ishonchingiz komilmi?",
                 text: "Siz buni qayta tiklay olmaysiz",
@@ -105,14 +66,35 @@
                 confirmButtonText: "Ha. o'chiraman"
             }).then((result) => {
                 if (result.isConfirmed) {
-                    Swal.fire({
-                        title: "O'chirildi!",
-                        text: "Muvaffaqiyatli bajarildi!",
-                        icon: "success"
+                    let default_url="{{ route('data_history.destroy', 0) }}";
+                    default_url = default_url.slice(0, -1) + id;
+                    fetch(default_url, {
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Content-Type': 'application/json'
+                        }
+                    }).then(response => {
+                        if (response.ok) {
+                            Swal.fire({
+                                title: "O'chirildi!",
+                                text: "Muvaffaqiyatli bajarildi!",
+                                icon: "success"
+                            }).then(() => {
+                                window.location.reload();
+                            });
+                        } else {
+                            Swal.fire({
+                                title: "Xato",
+                                text: "O'chirishda xatolik yuz berdi!",
+                                icon: "error"
+                            });
+                        }
                     });
                 }
             });
         }
+
     </script>
 
 @endsection

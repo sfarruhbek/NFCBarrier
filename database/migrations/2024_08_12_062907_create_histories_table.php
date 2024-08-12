@@ -13,6 +13,8 @@ return new class extends Migration
     {
         Schema::create('histories', function (Blueprint $table) {
             $table->id();
+            $table->unsignedInteger('car_id');
+            $table->dateTime('entered_date');
             $table->timestamps();
         });
     }
