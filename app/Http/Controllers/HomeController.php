@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Cars;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Application;
@@ -18,6 +19,8 @@ class HomeController extends Controller
     }
     public function data(): View|Factory|Application
     {
-        return view('data');
+        return view('data',[
+            'cars'=>Cars::all(),
+        ]);
     }
 }

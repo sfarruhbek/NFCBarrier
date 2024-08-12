@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CarsController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
@@ -23,3 +24,4 @@ require __DIR__.'/auth.php';
 Route::get('index', [HomeController::class, 'index'])->name('index');
 Route::get('history', [HomeController::class, 'history'])->name('history');
 Route::get('data', [HomeController::class, 'data'])->name('data');
+Route::resource('cars', CarsController::class)->names('cars');

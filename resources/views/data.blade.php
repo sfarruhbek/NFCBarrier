@@ -23,6 +23,12 @@
                     <i class="bi bi-plus-lg"></i>
                 </button>
             </div>
+            @if(session('success'))
+                <div id="success-alert" class="alert alert-success alert-dismissible" role="alert">
+                    <strong>Muvaffaqiyat!</strong> {{ session('success') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Yopmoq"></button>
+                </div>
+            @endif
             <div id="data">
                 <table style="width:100%; line-height: 20px" >
                     <tr>
@@ -30,48 +36,20 @@
                         <th>Mashina rusumi</th>
                         <th>Mashina raqami</th>
                         <th>Mashina rangi</th>
-                        <th>Kirish vaqti</th>
                         <th> </th>
                     </tr>
-                    <tr>
-                        <td>1</td>
-                        <td>Matiz</td>
-                        <td>90 N015GU </td>
-                        <td>
-                            <canvas class="color-screen" style="background: deeppink"></canvas>
-                        </td>
-                        <td> 15-iyun; 00:00</td>
-                        <td class="pointer-cursor">
-                            <button class="btn btn-warning" onclick="edit(1)"><i  class="bi bi-pencil"></i></button>
-                            <button class="btn btn-danger" onclick="deleteData(1)"><i class="bi bi-trash"></i></button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>2</td>
-                        <td>Spark</td>
-                        <td>90 N016GU </td>
-                        <td>
-                            <canvas class="color-screen" style="background: black"></canvas>
-                        </td>
-                        <td> 15-iyul; 00:00</td>
-                        <td class="pointer-cursor">
-                            <button class="btn btn-warning" onclick="edit(2)"><i  class="bi bi-pencil"></i></button>
-                            <button class="btn btn-danger" onclick="deleteData(2)"><i class="bi bi-trash"></i></button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>3</td>
-                        <td>Gentra</td>
-                        <td>90 N005GU </td>
-                        <td>
-                            <canvas class="color-screen" style="background: midnightblue"></canvas>
-                        </td>
-                        <td> 15-iyun; 00:00</td>
-                        <td class="pointer-cursor">
-                            <button class="btn btn-warning" onclick="edit(3)"><i  class="bi bi-pencil"></i></button>
-                            <button class="btn btn-danger" onclick="deleteData(3)"><i class="bi bi-trash"></i></button>
-                        </td>
-                    </tr>
+                    @foreach($cars as $car)
+                        <tr>
+                            <td>{{$car->id}}</td>
+                            <td>{{$car->model}}</td>
+                            <td>{{$car->car_number}}</td>
+                            <td>{{$car->car_color}}</td>
+                            <td class="pointer-cursor">
+                                <button class="btn btn-warning" onclick="edit(1)"><i  class="bi bi-pencil"></i></button>
+                                <button class="btn btn-danger" onclick="deleteData({{$car->id}})"><i class="bi bi-trash"></i></button>
+                            </td>
+                        </tr>
+                    @endforeach
                 </table>
 
 
@@ -106,9 +84,10 @@
 
                 title: "Qo'shish",
                 html: `
-                <form>
-                    <label for="car_name">Mashina turi</label>
-                    <input type="text" name="car_name" >
+                <form id="carForm" action="{{route('cars.store')}}" method="POST">
+                    @csrf
+                    <label for="model">Mashina turi</label>
+                    <input type="text" name="model" >
                      <label for="car_number">Mashina raqami</label>
                     <input type="text" name="car_number">
                     <label for="car_color">Mashina rangi</label>
@@ -117,7 +96,10 @@
                 confirmButtonText:"Saqlash",
                 cancelButtonText: "Bekor qilish",
                 showCancelButton: true,
-                showCloseButton: true
+                showCloseButton: true,
+                preConfirm: () => {
+                    document.getElementById('carForm').submit();
+                }
             });
         }
         function edit(id){
@@ -155,10 +137,36 @@
                 confirmButtonText: "Ha. o'chiraman"
             }).then((result) => {
                 if (result.isConfirmed) {
-                    Swal.fire({
-                        title: "O'chirildi!",
-                        text: "Muvaffaqiyatli bajarildi!",
-                        icon: "success"
+                    let default_url="{{ route('cars.destroy', 0) }}";
+                    default_url = default_url.slice(0, -1) + id;
+                    fetch(default_url, {
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Content-Type': 'application/json'
+                        }
+                    }).then(response => {
+                        if (response.ok) {
+                            Swal.fire({
+                                title: "O'chirildi!",
+                                text: "Muvaffaqiyatli bajarildi!",
+                                icon: "success"
+                            }).then(() => {
+                                window.location.reload();
+                            });
+                        } else {
+                            Swal.fire({
+                                title: "Xato",
+                                text: "O'chirishda xatolik yuz berdi!",
+                                icon: "error"
+                            });
+                        }
+                    }).catch(error => {
+                        Swal.fire({
+                            title: "Xato",
+                            text: "Server bilan bog'lanishda xatolik yuz berdi!",
+                            icon: "error"
+                        });
                     });
                 }
             });
