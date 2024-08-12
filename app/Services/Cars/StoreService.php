@@ -15,9 +15,8 @@ class StoreService
         Cars::query()->create($data);
     }
 
-    public function update($data, $responsible)
+    public function update($data, $cars)
     {
-        $data['month']=Carbon::createFromFormat('Y-m', $data['month'])->startOfMonth()->format('Y-m-d');
-        $responsible->update($data);
+        $cars->update($data);
     }
 }

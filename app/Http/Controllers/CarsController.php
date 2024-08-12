@@ -6,7 +6,6 @@ use App\Http\Requests\Cars\StoreCars;
 use App\Models\Cars;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use App\Services\Cars\StoreService;
 
 class CarsController extends Controller
@@ -58,9 +57,12 @@ class CarsController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Cars $cars)
+    public function update(StoreCars $request, $id)
     {
-        //
+        $cars = Cars::find($id);
+        $this->car->update($request->validated(), $cars);
+
+        return back()->with('success', 'Successfully Updated');
     }
 
     /**

@@ -45,7 +45,7 @@
                             <td>{{$car->car_number}}</td>
                             <td>{{$car->car_color}}</td>
                             <td class="pointer-cursor">
-                                <button class="btn btn-warning" onclick="edit(1)"><i  class="bi bi-pencil"></i></button>
+                                <button class="btn btn-warning" onclick="edit(`{{$car->id}}`,`{{$car->model}}`,`{{$car->car_number}}`,`{{$car->car_color}}`)"><i  class="bi bi-pencil"></i></button>
                                 <button class="btn btn-danger" onclick="deleteData({{$car->id}})"><i class="bi bi-trash"></i></button>
                             </td>
                         </tr>
@@ -87,18 +87,18 @@
                 }
             });
         }
-        function edit(id){
-            console.log(id);
-            let car_name="Cobalt";
-            let car_number="90F777SF";
-            let car_color="Qora";
+        function edit(id,model,car_number,car_color){
+            let default_url="{{ route('cars.update', 0) }}";
+            default_url = default_url.slice(0, -1) + id;
             Swal.fire({
 
                 title: "Tahrirlash",
                 html: `
-                <form>
-                    <label for="car_name">Mashina turi</label>
-                    <input type="text" name="car_name" value="${car_name}">
+                <form id="updateCarForm" action="${default_url}" method="POST">
+                    @method("PUT")
+                    @csrf
+                    <label for="model">Mashina turi</label>
+                    <input type="text" name="model" value="${model}">
                      <label for="car_number">Mashina raqami</label>
                     <input type="text" name="car_number" value="${car_number}">
                     <label for="car_color">Mashina rangi</label>
@@ -107,7 +107,10 @@
                 confirmButtonText:"Tahrirlash",
                 cancelButtonText: "Bekor qilish",
                 showCancelButton: true,
-                showCloseButton: true
+                showCloseButton: true,
+                preConfirm: () => {
+                    document.getElementById('updateCarForm').submit();
+                }
             });
         }
         function deleteData(id){
