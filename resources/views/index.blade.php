@@ -67,24 +67,24 @@
 
                     if (updateData !== 0) {
 
-                        const respOpen = await fetch('http://192.168.4.1/open');
-                        if (response.ok) {
+                        // const respOpen = await fetch('http://192.168.4.1/open');
+                        // if (response.ok) {
                             dataWindow.style = "";
                             model.innerHTML = updateData.model;
                             car_number.innerHTML = updateData.car_number;
                             car_color.innerHTML = updateData.car_color;
-                        }
+                        // }
 
                         await new Promise(resolve => setTimeout(resolve, 5000));
 
-                        const respClose = await fetch('http://192.168.4.1/close');
-                        if (response.ok) {
+                        //const respClose = await fetch('http://192.168.4.1/close');
+                        // if (response.ok) {
                             dataWindow.style = 'display: none';
                             model.innerHTML = "";
                             car_number.innerHTML = "";
                             car_color.innerHTML = "";
                             await fetch('http://192.168.4.1/read');
-                        }
+                        // }
                     }
                 }
             } catch (error) {
