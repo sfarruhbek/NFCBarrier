@@ -306,7 +306,7 @@
                                icon: 'info',
                                showConfirmButton: true,
                                showCancelButton: true,
-                               confirmButtonText: "Saqlash",
+                               confirmButtonText: "O'zgartirish",
                            }).then(r=>{
                                if(r.isConfirmed){
                                    fetch('{{ route('car.update.card') }}', {

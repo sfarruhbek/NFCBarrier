@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Cars\StoreCars;
 use App\Models\Cars;
+use App\Models\History;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Application;
@@ -45,9 +46,17 @@ class CarsController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Cars $cars)
+    public function show($card)
     {
-        //
+        $car = Cars::where('card',$card)->first();
+        if (!$car){
+            return response(0);
+        }
+        History::query()->create([
+            'car_id' => $car->id,
+            'entered_date' => now(),
+        ]);
+        return response()->json($car);
     }
 
     /**

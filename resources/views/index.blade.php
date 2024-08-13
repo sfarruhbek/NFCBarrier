@@ -17,21 +17,20 @@
                 <h1>Kiruvchi mashinalar ma'lumotlari</h1>
             </div>
             <hr>
-            <div id="data">
+            <div id="data" style="display: none">
                 <div>
                     <h2>Rusum</h2>
-                    <h1> Tracker </h1>
+                    <h1 id="model"></h1>
                 </div>
                 <br>
                 <div>
                     <h2>Mashina raqami</h2>
-                    <h1> 90 S110NA </h1>
+                    <h1 id="car_number"></h1>
                 </div>
                 <br>
                 <div>
                     <h2>Avtomobil rangi</h2>
-                    <h1>
-                        <canvas class="color-screen" style="background: #0a53be"></canvas>
+                    <h1 id="car_color">
                     </h1>
                 </div>
             </div>
@@ -44,20 +43,58 @@
         </footer>
     </div>
     <script>
-        function fetchData() {
-            fetch('http://192.168.4.1/read')
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
+        fetch('http://192.168.4.1/read');
+        let dataWindow = document.getElementById('data');
+        let model = document.getElementById('model');
+        let car_number = document.getElementById('car_number');
+        let car_color = document.getElementById('car_color');
+
+        let default_url = `{{route('cars.show',0)}}`;
+        function UpdateUrl(id) {
+            return default_url.slice(0, -1) + id;
+        }
+        async function fetchData() {
+            try {
+                const response = await fetch('http://192.168.4.1/read');
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                const data = await response.json();
+                if (data.status === 1) {
+                    const updateResponse = await fetch(UpdateUrl(data.id));
+                    const updateData = await updateResponse.json();
+
+                    if (updateData !== 0) {
+
+                        const respOpen = await fetch('http://192.168.4.1/open');
+                        if (response.ok) {
+                            dataWindow.style = "";
+                            model.innerHTML = updateData.model;
+                            car_number.innerHTML = updateData.car_number;
+                            car_color.innerHTML = updateData.car_color;
+                        }
+
+                        await new Promise(resolve => setTimeout(resolve, 5000));
+
+                        const respClose = await fetch('http://192.168.4.1/close');
+                        if (response.ok) {
+                            dataWindow.style = 'display: none';
+                            model.innerHTML = "";
+                            car_number.innerHTML = "";
+                            car_color.innerHTML = "";
+                            await fetch('http://192.168.4.1/read');
+                        }
                     }
-                    return response.json();
-                })
-                .then(data => console.log(data))
-                .catch(error => console.error('Error:', error));
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+            await new Promise(resolve => setTimeout(resolve, 500));
+            fetchData();
         }
 
-        setInterval(fetchData, 1000);
-
+        fetchData();
 
     </script>
 @endsection
