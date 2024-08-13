@@ -27,3 +27,6 @@ Route::get('history', [HomeController::class, 'history'])->name('history');
 Route::get('data', [HomeController::class, 'data'])->name('data');
 Route::resource('cars', CarsController::class)->names('cars');
 Route::resource('data_history', HistoryController::class)->names('data_history');
+Route::post('/car-check', [CarsController::class, 'check'])->name('car.check');
+Route::post('/car-check-card', [CarsController::class, 'card'])->name('car.check.card');
+Route::post('/car-update-card', [CarsController::class, 'card_update'])->name('car.update.card');

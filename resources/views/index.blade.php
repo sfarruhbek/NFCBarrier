@@ -43,4 +43,21 @@
             <div>Designed by <a href="mailto:ganijanovanafisa@gmail.com">Nafisa</a>  and <a href="mailto:satimbayevfarruhbek@gmail.com">Farrukhbek</a></div>
         </footer>
     </div>
+    <script>
+        function fetchData() {
+            fetch('http://192.168.4.1/read')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => console.log(data))
+                .catch(error => console.error('Error:', error));
+        }
+
+        setInterval(fetchData, 1000);
+
+
+    </script>
 @endsection

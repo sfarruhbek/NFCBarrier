@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('model');
             $table->string('car_number');
             $table->string('car_color');
+            $table->string('card');
             $table->boolean('status')->default('1');
             $table->timestamps();
         });

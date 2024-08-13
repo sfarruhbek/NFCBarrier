@@ -4,9 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Cars\StoreCars;
 use App\Models\Cars;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
+use Illuminate\Foundation\Application;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use App\Services\Cars\StoreService;
+use Illuminate\Http\Request;
 
 class CarsController extends Controller
 {
@@ -74,5 +78,32 @@ class CarsController extends Controller
         $data->status=false;
         $data->save();
         return response()->json(['success' => 'Car deleted successfully!']);
+    }
+    public function check(Request $request)
+    {
+        $data = Cars::where('car_number', $request->car_number)->first();
+        if (!$data) {
+            return response(['success' => 'Car deleted successfully!']);
+        }
+        return dd($data);
+    }
+    public function card(Request $request)
+    {
+        $data = Cars::where('card', $request->card)->first();
+        if (!$data) {
+            return response(['success' => 'Car deleted successfully!']);
+        }
+        return dd($data);
+    }
+    public function card_update(Request $request)
+    {
+        $data = Cars::where('card', $request->card)->first();
+        if ($data) {
+            dd("ss");
+        }
+        $data = Cars::find($request->id);
+        $data->card = $request->card;
+        $data->save();
+        return response(['success' => 'Car deleted successfully!']);
     }
 }

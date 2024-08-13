@@ -25,6 +25,7 @@ class StoreCars extends FormRequest
             'model' => 'required|string',
             'car_number' => 'required|string',
             'car_color'=>'required|string',
+            'card'=>'string',
         ];
     }
 }

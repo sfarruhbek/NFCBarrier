@@ -17,11 +17,13 @@ class CarsSeeder extends Seeder
             'model' => 'Nexia 2',
             'car_number' => "90A777SS",
             'car_color' => "Oq",
+            'card' => "A411CAAB",
         ]);
         Cars::query()->create([
             'model' => 'Malibu',
             'car_number' => "90A777ZZ",
             'car_color' => "Qora",
+            'card' => "F411CACB",
         ]);
     }
 }

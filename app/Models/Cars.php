@@ -7,5 +7,5 @@ use Illuminate\Database\Eloquent\Model;
 class Cars extends Model
 {
     use HasFactory;
-    protected $fillable = ['model', 'car_number', 'car_color'];
+    protected $fillable = ['model', 'car_number', 'car_color', 'card'];
 }

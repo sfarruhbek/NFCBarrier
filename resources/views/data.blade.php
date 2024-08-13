@@ -66,30 +66,166 @@
     <script>
         function add(){
             Swal.fire({
-
                 title: "Qo'shish",
                 html: `
-                <form id="carForm" action="{{route('cars.store')}}" method="POST">
+                <form id="carForm" method="POST">
                     @csrf
                     <label for="model">Mashina turi</label>
-                    <input type="text" name="model" required>
-                     <label for="car_number">Mashina raqami</label>
-                    <input type="text" name="car_number" required>
+                    <input id="SWModel" type="text" name="model" required>
+                    <label for="car_number">Mashina raqami</label>
+                    <input id="SWCar_number" type="text" name="car_number" required>
                     <label for="car_color">Mashina rangi</label>
-                    <input type="text" name="car_color" required>
+                    <input id="SWCar_color" type="text" name="car_color" required>
                 </form> `,
-                confirmButtonText:"Saqlash",
+                confirmButtonText: "NFC Card qo'shish",
                 cancelButtonText: "Bekor qilish",
                 showCancelButton: true,
                 showCloseButton: true,
-                preConfirm: () => {
-                    document.getElementById('carForm').submit();
+                showLoaderOnConfirm: true,
+                preConfirm: async () => {
+                    let model = document.getElementById('SWModel');
+                    let car_number = document.getElementById('SWCar_number');
+                    let car_color = document.getElementById('SWCar_color');
+
+                    if(model.value === "" || car_number.value === "" || car_color.value === ""){
+                        if(model.value === "") {
+                            model.style = "border: 1px solid red";
+                        }else{
+                            model.style = "";
+                        }
+                        if(car_number.value === "") {
+                            car_number.style = "border: 1px solid red";
+                        }else{
+                            car_number.style = "";
+                        }
+                        if(car_color.value === "") {
+                            car_color.style = "border: 1px solid red";
+                        }else{
+                            car_color.style = "";
+                        }
+                        Swal.showValidationMessage(`
+                            To'ldirilishi kerak bo'lgan maydonlarni to'ldiring
+                        `);
+                    } else {
+
+                        let ss = true;
+                        await fetch('{{ route('car.check') }}', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}' // Include CSRF token for Laravel
+                            },
+                            body: JSON.stringify({
+                                model: model.value,
+                                car_number: car_number.value,
+                                car_color: car_color.value,
+                            })
+                        }).then(response => {
+                            if (!response.ok) {
+                                Swal.showValidationMessage(`
+                                    Bunday nomerli foydalanuvchi mavjud
+                                `);
+                                ss = false;
+                            }
+                        });
+
+                        if (ss) {
+                            const url = `http://192.168.4.1/read`;
+                            fetch(url);
+                            try {
+                                let response;
+                                let result;
+                                while (true) {
+                                    response = await fetch(url);
+                                    result = await response.json();
+                                    if (result.status === 1) {
+
+                                        await fetch('{{ route('car.check.card') }}', {
+                                            method: 'POST',
+                                            headers: {
+                                                'Content-Type': 'application/json',
+                                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                            },
+                                            body: JSON.stringify({
+                                                card: result.id,
+                                            })
+                                        }).then(response => {
+                                            if (!response.ok) {
+                                                Swal.showValidationMessage(`
+                                                    Bunday id li card mavjud
+                                                `);
+                                            }
+                                        });
+                                        break;
+                                    }
+                                    await new Promise(resolve => setTimeout(resolve, 200));
+                                }
+                                return result;
+                            } catch (error) {
+                                Swal.showValidationMessage(`
+                                    Error: NFC Reader topilmadi
+                                `);
+                            }
+                        }
+                    }
+                },
+                allowOutsideClick: () => !Swal.isLoading()
+            }).then((result) => {
+                let model = document.getElementById('SWModel').value;
+                let car_number = document.getElementById('SWCar_number').value;
+                let car_color = document.getElementById('SWCar_color').value;
+                if (result.isConfirmed) {
+                    const resultData = result.value;
+
+                    Swal.fire({
+                        title: `Yangi karta`,
+                        text: `ID: ${resultData.id}`,
+                        icon: 'info',
+                        showConfirmButton: true,
+                        showCancelButton: true,
+                        confirmButtonText: "Saqlash",
+                    }).then((result) => {
+                        if (result.isConfirmed){
+                            fetch('{{ route('cars.store') }}', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}' // Include CSRF token for Laravel
+                                },
+                                body: JSON.stringify({
+                                    model: model,
+                                    car_number: car_number,
+                                    car_color: car_color,
+                                    card: resultData.id,
+                                })
+                            })
+                                .then(response => {
+                                    if (response.ok) {
+                                        Swal.fire({
+                                            title: "Saqlandi!",
+                                            text: "Muvaffaqiyatli bajarildi!",
+                                            icon: "success"
+                                        }).then(() => {
+                                            window.location.reload();
+                                        });
+                                    } else {
+                                        Swal.fire({
+                                            title: "Xato",
+                                            text: "Xatolik yuz berdi!",
+                                            icon: "error"
+                                        });
+                                    }
+                                });
+                        }
+                    });
                 }
             });
         }
+
         function edit(id,model,car_number,car_color){
             let default_url="{{ route('cars.update', 0) }}";
             default_url = default_url.slice(0, -1) + id;
+
             Swal.fire({
 
                 title: "Tahrirlash",
@@ -105,11 +241,106 @@
                     <input type="text" name="car_color" value="${car_color}" required>
                 </form> `,
                 confirmButtonText:"Tahrirlash",
+                showDenyButton: true,
+                denyButtonText: `NFC kartani yangilash`,
+                denyButtonColor: 'green',
                 cancelButtonText: "Bekor qilish",
                 showCancelButton: true,
                 showCloseButton: true,
                 preConfirm: () => {
                     document.getElementById('updateCarForm').submit();
+                }
+            }).then(result =>{
+                if(result.isDenied){
+                    Swal.fire({
+                        title: "Kartani o'zgartirish",
+                        showConfirmButton: true,
+                        confirmButtonText: "Kartani qidirish",
+                        showCancelButton: true,
+                        showLoaderOnConfirm: true,
+                        preConfirm: async () => {
+                            const url = `http://192.168.4.1/read`;
+                            fetch(url);
+                            try {
+                                let response;
+                                let result;
+                                while (true) {
+                                    response = await fetch(url);
+                                    result = await response.json();
+                                    if (result.status === 1) {
+
+                                        await fetch('{{ route('car.check.card') }}', {
+                                            method: 'POST',
+                                            headers: {
+                                                'Content-Type': 'application/json',
+                                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                            },
+                                            body: JSON.stringify({
+                                                card: result.id,
+                                            })
+                                        }).then(response => {
+                                            if (!response.ok) {
+                                                Swal.showValidationMessage(`
+                                                    Bunday id li card mavjud
+                                                `);
+                                            }
+                                        });
+                                        break;
+                                    }
+                                    await new Promise(resolve => setTimeout(resolve, 200));
+                                }
+                                return result;
+                            } catch (error) {
+                                Swal.showValidationMessage(`
+                                    Error: NFC Reader topilmadi
+                                `);
+                            }
+                        },
+                        allowOutsideClick: () => !Swal.isLoading()
+                    }).then(result=>{
+                       if(result.isConfirmed){
+                           const resultData = result.value;
+                           Swal.fire({
+                               title: `Yangi karta`,
+                               text: `ID: ${resultData.id}`,
+                               icon: 'info',
+                               showConfirmButton: true,
+                               showCancelButton: true,
+                               confirmButtonText: "Saqlash",
+                           }).then(r=>{
+                               if(r.isConfirmed){
+                                   fetch('{{ route('car.update.card') }}', {
+                                       method: 'POST',
+                                       headers: {
+                                           'Content-Type': 'application/json',
+                                           'X-CSRF-TOKEN': '{{ csrf_token() }}' // Include CSRF token for Laravel
+                                       },
+                                       body: JSON.stringify({
+                                           id: id,
+                                           card: resultData.id,
+                                       })
+                                   })
+                                       .then(response => {
+                                           if (response.ok) {
+                                               Swal.fire({
+                                                   title: "Saqlandi!",
+                                                   text: "Muvaffaqiyatli bajarildi!",
+                                                   icon: "success"
+                                               }).then(() => {
+                                                   window.location.reload();
+                                               });
+                                           } else {
+                                               Swal.fire({
+                                                   title: "Xato",
+                                                   text: "Xatolik yuz berdi!",
+                                                   icon: "error"
+                                               });
+                                           }
+                                       });
+                               }
+                           })
+                       }
+                    });
                 }
             });
         }
