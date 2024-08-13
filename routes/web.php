@@ -22,11 +22,11 @@ Route::middleware('auth')->group(function () {
 
 require __DIR__.'/auth.php';
 
-Route::get('index', [HomeController::class, 'index'])->name('index');
-Route::get('history', [HomeController::class, 'history'])->name('history');
-Route::get('data', [HomeController::class, 'data'])->name('data');
-Route::resource('cars', CarsController::class)->names('cars');
-Route::resource('data_history', HistoryController::class)->names('data_history');
-Route::post('/car-check', [CarsController::class, 'check'])->name('car.check');
-Route::post('/car-check-card', [CarsController::class, 'card'])->name('car.check.card');
-Route::post('/car-update-card', [CarsController::class, 'card_update'])->name('car.update.card');
+Route::get('index', [HomeController::class, 'index'])->name('index')->middleware(['auth', 'verified']);
+Route::get('history', [HomeController::class, 'history'])->name('history')->middleware(['auth', 'verified']);
+Route::get('data', [HomeController::class, 'data'])->name('data')->middleware(['auth', 'verified']);
+Route::resource('cars', CarsController::class)->names('cars')->middleware(['auth', 'verified']);
+Route::resource('data_history', HistoryController::class)->names('data_history')->middleware(['auth', 'verified']);
+Route::post('/car-check', [CarsController::class, 'check'])->name('car.check')->middleware(['auth', 'verified']);
+Route::post('/car-check-card', [CarsController::class, 'card'])->name('car.check.card')->middleware(['auth', 'verified']);
+Route::post('/car-update-card', [CarsController::class, 'card_update'])->name('car.update.card')->middleware(['auth', 'verified']);

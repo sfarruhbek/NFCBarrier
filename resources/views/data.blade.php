@@ -6,8 +6,8 @@
             <div>
                 <h1> <i class="bi bi-list"> </i>Ma'lumotlar</h1>
             </div>
-            <div id="qwe">
-                <div>Nafisa</div>
+            <div style="cursor: pointer" id="qwe" onclick="window.location.href=`{{route('profile.edit')}}`">
+                <div>{{auth()->user()->name}}</div>
                 <div>
                     <i class="bi bi-person bi-person-fill"></i>
                 </div>
